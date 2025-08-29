@@ -63,7 +63,6 @@ def internal_error(error):
     return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == '__main__':
-    logger.info(f"Запуск Flask-приложения на {FLASK_HOST}:{FLASK_PORT}")
     app.run(
         host=FLASK_HOST,
         port=FLASK_PORT,

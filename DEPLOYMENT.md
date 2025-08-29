@@ -137,7 +137,7 @@ sudo certbot --nginx -d your-domain.com
 
 ### Шаг 10: Создание systemd сервиса
 ```bash
-sudo nano /etc/systemd/system/tg-bot.service
+sudo nano /etc/systemd/system/gettginfobot.service
 ```
 
 Содержимое сервиса:
@@ -162,14 +162,14 @@ WantedBy=multi-user.target
 Активируйте сервис:
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable tg-bot
-sudo systemctl start tg-bot
+sudo systemctl enable gettginfobot
+sudo systemctl start gettginfobot
 ```
 
 ### Шаг 11: Проверка статуса
 ```bash
-sudo systemctl status tg-bot
-sudo journalctl -u tg-bot -f
+sudo systemctl status gettginfobot
+sudo journalctl -u gettginfobot -f
 ```
 
 ## 🔧 Настройка файрвола
@@ -187,7 +187,7 @@ sudo ufw enable
 ### Просмотр логов
 ```bash
 # Логи сервиса
-sudo journalctl -u tg-bot -f
+sudo journalctl -u gettginfobot -f
 
 # Логи Nginx
 sudo tail -f /var/log/nginx/access.log
@@ -197,7 +197,7 @@ sudo tail -f /var/log/nginx/error.log
 ### Проверка состояния
 ```bash
 # Статус сервиса
-sudo systemctl status tg-bot
+sudo systemctl status gettginfobot
 
 # Проверка webhook
 curl https://your-domain.com/health
@@ -209,8 +209,8 @@ curl -X POST https://your-domain.com/webhook
 ## 🚨 Устранение неполадок
 
 ### Бот не отвечает
-1. Проверьте статус сервиса: `sudo systemctl status tg-bot`
-2. Проверьте логи: `sudo journalctl -u tg-bot -f`
+1. Проверьте статус сервиса: `sudo systemctl status gettginfobot`
+2. Проверьте логи: `sudo journalctl -u gettginfobot -f`
 3. Убедитесь, что webhook установлен
 
 ### Webhook не работает
@@ -230,7 +230,7 @@ cd /home/tgbot/GetTGInfoBot
 git pull origin main
 source venv/bin/activate
 pip install -r requirements.txt
-sudo systemctl restart tg-bot
+sudo systemctl restart gettginfobot
 ```
 
 ## 📱 Тестирование
