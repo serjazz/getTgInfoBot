@@ -24,10 +24,13 @@ def webhook():
         
         logger.info(f"Получен webhook: {update_data.get('update_id', 'unknown')}")
         
-        # Обрабатываем обновление асинхронно
-        asyncio.run(bot.webhook_handler(update_data))
+        # Обрабатываем обновление синхронно
+        result = bot.webhook_handler_sync(update_data)
         
-        return jsonify({"status": "ok"}), 200
+        if result:
+            return jsonify({"status": "ok"}), 200
+        else:
+            return jsonify({"status": "error", "message": "Processing failed"}), 500
     
     except Exception as e:
         logger.error(f"Ошибка при обработке webhook: {e}")
@@ -36,11 +39,24 @@ def webhook():
 @app.route('/health', methods=['GET'])
 def health_check():
     """Проверка состояния сервиса"""
-    return jsonify({
-        "status": "healthy",
-        "service": "Telegram Bot Webhook",
-        "timestamp": asyncio.run(bot.application.bot.get_me()).to_dict()
-    })
+    try:
+        # Создаем новый event loop для health check
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        bot_info = loop.run_until_complete(bot.application.bot.get_me())
+        loop.close()
+        
+        return jsonify({
+            "status": "healthy",
+            "service": "Telegram Bot Webhook",
+            "bot_info": bot_info.to_dict()
+        })
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "service": "Telegram Bot Webhook",
+            "error": str(e)
+        }), 500
 
 @app.route('/', methods=['GET'])
 def index():
@@ -63,6 +79,7 @@ def internal_error(error):
     return jsonify({"error": "Internal server error"}), 500
 
 if __name__ == '__main__':
+    logger.info(f"Запуск Flask-приложения на {FLASK_HOST}:{FLASK_PORT}")
     app.run(
         host=FLASK_HOST,
         port=FLASK_PORT,
